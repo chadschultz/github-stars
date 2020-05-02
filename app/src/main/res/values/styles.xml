@@ -1,0 +1,46 @@
+<resources>
+
+    <!-- Application theme, used for Lollipop. See values-v23/styles.xml for AppTheme for Lollipop and up -->
+    <style name="AppTheme" parent="BaseTheme">
+        <!-- TODO -->
+        <!-- Customize your theme here. -->
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+<!--        <item name="colorAccent">@color/colorAccent</item>-->
+    </style>
+
+    <!-- Parent of application theme, used for all API levels -->
+    <style name="BaseTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- TODO -->
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+<!--        <item name="colorPrimary">#F00</item>-->
+<!--        <item name="colorPrimaryDark">#0F0</item>-->
+<!--        <item name="colorAccent">@color/colorAccent</item>-->
+
+<!--        <item name="android:statusBarColor">#00F</item>-->
+
+        <!-- colorPrimary is the background color for the MaterialToolbar, colorPrimaryDark is the background color for the status bar -->
+
+        <!-- TODO: is this the best way to go? -->
+        <!-- TODO: shouldn't I only change the status bar color on higher APIs? -->
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+<!--        <item name="android:navigationBarColor">@color/colorPrimary</item>-->
+<!--        <item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+    </style>
+
+    <style name="Widget.App.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+<!--        <item name="titleTextAppearance">@style/TextAppearance.App.Headline6</item>-->
+<!--        <item name="subtitleTextAppearance">@style/TextAppearance.App.Subtitle1</item>-->
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <!-- TODO: -->
+<!--        <item name="colorPrimaryVariant">#00FF00</item>-->
+        <item name="colorOnPrimary">@color/colorPrimaryDark</item> <!-- TODO: make sure this is the best way to set this up -->
+    </style>
+
+</resources>

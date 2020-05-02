@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/three_line_list_item_height"
+    android:padding="@dimen/margin_normal">
+
+    <!-- TODO: styles -->
+    <!-- TODO: talk about my use of downloadable fonts to match NYTimes style https://developer.android.com/guide/topics/ui/look-and-feel/downloadable-fonts -->
+    <!-- TODO: test text scaling? -->
+    <TextView
+        android:id="@+id/repoNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_normal"
+        android:fontFamily="@font/playfair_display"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/repoDescriptionTextView"
+        app:layout_constraintEnd_toStartOf="@+id/starImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Store" />
+
+    <!-- TODO: figure out list height, that always sucks TEST EXPANDING HEIGHT -->
+
+    <!-- TODO: comment on why I'm using the list pattern instead of cards, and why I decided to ignore the two line restriction -->
+    <TextView
+        android:id="@+id/repoDescriptionTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/playfair_display"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/repoNameTextView"
+        app:layout_constraintStart_toStartOf="@+id/repoNameTextView"
+        app:layout_constraintTop_toBottomOf="@+id/repoNameTextView"
+        tools:text="Android Library for Async Data Loading and Caching" />
+
+    <!-- TODO: test accessibility, see how I can provide alt text that makes sense. Do I need to move it after the TextView in the XML? -->
+    <ImageView
+        android:id="@+id/starImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_extra_small"
+        android:src="@drawable/ic_star_black_24dp"
+        app:layout_constraintEnd_toStartOf="@+id/repoStarCountTextView"
+        app:layout_constraintStart_toEndOf="@+id/repoNameTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/repoStarCountTextView"
+        app:layout_constraintTop_toTopOf="@+id/repoStarCountTextView" />
+
+    <!--
+        Suppose we want to show a repository that is starred a great many times, like the Retrofit repo
+        from Square with, at the moment, 35372 stars. On Nougat and above we can use a more compact format,
+        like "35k". Below Nougat, we show "35372". We can let it take more screen width, manually format it,
+        or shrink the text size. Here we're shrinking the text size as a quick and dirty solution for older
+        devices.
+        Auto sizing features, like "android:autoSizeTextType", are only available in TextView from API
+        level 26 (Oreo) and up. But below that, Android will sneakily substitute AppCompatTextView for
+        our regular TextView behind the scenes. All we need to do is use the "app" namespace instead of
+        "android" for the auto sizing properties.
+    -->
+    <TextView
+        android:id="@+id/repoStarCountTextView"
+        android:layout_width="wrap_content"
+        android:maxWidth="30dp"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:gravity="start|center_vertical"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMaxTextSize="14sp"
+        app:autoSizeMinTextSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/starImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="3.6k" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

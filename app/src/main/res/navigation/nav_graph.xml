@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/gitHubRepoListFragment">
+
+    <fragment
+        android:id="@+id/gitHubRepoListFragment"
+        android:name="com.example.githubstars.githubrepolist.GitHubRepoListFragment"
+        android:label="GitHubRepoListFragment" >
+        <action
+            android:id="@+id/action_gitHubRepoListFragment_to_github_repo_detail"
+            app:destination="@id/github_repo_detail"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right">
+            <argument
+                android:name="uri"
+                app:argType="android.net.Uri"
+                app:nullable="false" />
+        </action>
+    </fragment>
+
+    <!-- Chrome Custom Tabs don't seem to use Navigation Component animations. They have their own
+    animation features. [ChromeCustomTabsNavigator] can use animations we specify here. In this specific
+    case, I've chosen to more or less follow the Lists material pattern, which recommends a "parent-child"
+    transition when tapping on a list row to open a detail screen: https://material.io/components/lists/#behavior
+    Currently, the way to accomplish that would probably be a shared element transition. That doesn't
+    work for Chrome Custom Tabs, since they're essentially a black box. We can't easily meddle with the
+    contents of Chrome Custom Tabs to leverage a transition name for a shared transition element. So I'll
+    use the quick and dirty solution of animation files to expand and collapse the detail screen in a
+    roughly similar way. It won't expand from and collapse to the specific row, but it will do until
+    Google offers a better solution.
+    Also, I'm using the up button here, as the NYTimes app seems to use the up button on detail (article)
+    screens. Otherwise I would likely use the close button. -->
+    <chrome
+        android:id="@+id/github_repo_detail"
+        android:name="com.example.chromecustomtabsnavigator.ChromeCustomTabsNavigator"
+        android:label="GitHubRepoDetail"
+        app:colorScheme="light"
+        app:enterAnim="@anim/expand"
+        app:exitAnim="@anim/collapse"
+        app:upInsteadOfClose="true"
+        app:addDefaultShareMenuItem="true"/>
+</navigation>

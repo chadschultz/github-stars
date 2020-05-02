@@ -1,0 +1,13 @@
+<resources>
+    <!-- `BaseTheme.Vxx` accumulates common styles across previous API levels and should inherit
+    from the `BaseTheme.Vxx` for the next API level down. `AppTheme` is for any styles that should
+    not be inherited by style sheets for higher API levels. It should extend the `BaseTheme.Vxx`
+    from this file. -->
+    <style name="BaseTheme.V23">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme.V23"/>
+
+</resources>

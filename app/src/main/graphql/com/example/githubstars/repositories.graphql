@@ -1,0 +1,18 @@
+query RepositoriesQuery($organizationLogin: String!) {
+  organization(login: $organizationLogin) {
+    login
+    repositories(first: 3, orderBy: {field: STARGAZERS, direction: DESC}) {
+      edges {
+        node {
+          id
+          name
+        	description
+          url
+          stargazers {
+     		  	totalCount
+          }
+        }
+      }
+    }
+  }
+}

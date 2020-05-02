@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- `BaseTheme.Vxx` accumulates common styles across previous API levels and should inherit
+    from the `BaseTheme.Vxx` for the next API level down. `AppTheme` is for any styles that should
+    not be inherited by style sheets for higher API levels. It should extend the `BaseTheme.Vxx`
+    from this file. -->
+    <style name="BaseTheme.V27" parent="BaseTheme.V23">
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme.V27"/>
+</resources>

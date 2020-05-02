@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TODO -->
+    <dimen name="margin_normal">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_extra_small">4dp</dimen>
+
+    <!-- Per https://material.io/components/lists/#specs in the "Three line" section -->
+    <dimen name="three_line_list_item_height">88dp</dimen>
+</resources>
