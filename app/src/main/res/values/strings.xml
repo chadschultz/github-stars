@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">GHStars</string>
+    <string name="app_name_full">GitHub Stars</string>
     <string name="search_query_hint">Organization ID on GitHub</string>
+    <string name="search">Search</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

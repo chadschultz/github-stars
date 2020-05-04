@@ -14,8 +14,9 @@ class ApolloConnector {
         fun setupApollo(): ApolloClient {
             val okHttpClient = OkHttpClient.Builder().authenticator(object: Authenticator {
                 override fun authenticate(route: Route?, response: Response): Request? {
+                    //TODO: more secure way to handle authentication
                     //TODO: improve? https://stackoverflow.com/questions/22490057/android-okhttp-with-basic-authentication
-                    return response.request().newBuilder().header("Authorization", "bearer 4108af97e88d5ad95ca24024319f7482555f8143").build();
+                    return response.request().newBuilder().header("Authorization", "bearer 6416cb9cd8dd27fcdc87c5646e91c39c6f3c7783").build()
                 }
 
             }).build()

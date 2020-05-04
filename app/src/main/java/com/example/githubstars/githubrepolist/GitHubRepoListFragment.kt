@@ -6,14 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.fragment.app.Fragment
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import com.example.chromecustomtabsnavigator.findChromeCustomTabsNavigator
+import com.example.githubstars.BaseFragment
 import com.example.githubstars.MainActivity
 import com.example.githubstars.R
 import com.example.githubstars.RepositoriesQuery
@@ -22,7 +22,7 @@ import com.example.githubstars.data.GitHubRepo
 import com.example.githubstars.databinding.FragmentGithubRepoListBinding
 import com.example.githubstars.ui.BetweenItemDecoration
 
-class GitHubRepoListFragment() : Fragment() {
+class GitHubRepoListFragment() : BaseFragment() {
     // Strange syntax, but taken directly from
     // https://developer.android.com/topic/libraries/view-binding#fragments
     private var _binding: FragmentGithubRepoListBinding? = null
@@ -46,6 +46,10 @@ class GitHubRepoListFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //TODO: don't show chips for potential searches or otherwise assume what user will search - but do autocomplete recent searches, starting with zero characters. Use Gmail as an example
+
+        // TODO: multiple different view modes: initial load, recyclerview showing results, organization ID is not a match, organization has no repositories. Oh, and maybe if user exits searc hview?
+
         // TODO: progress indicator?
 
         // A SwipeRefreshLayout could be added, as seen in https://developer.android.com/training/swipe/add-swipe-interface
@@ -61,23 +65,33 @@ class GitHubRepoListFragment() : Fragment() {
 
 //        loadRepositories("spothero")
 
-        //TODO: view binding
 
 //        val appBar = findViewById<MaterialToolbar>(R.id.topAppBar)
 //        appBar.menu.findItem(R.id.search).expandActionView()
 //        val searchMenuItem = appBar.menu.findItem(R.id.search)
 
+
+//        binding.topAppBar.setContentInsetsAbsolute(0, 0)
         //TODO: comment on synthetic references vs viewbinding
+        //TODO: do I need this?
         binding.topAppBar.menu.findItem(R.id.search).expandActionView()
         val searchMenuItem = binding.topAppBar.menu.findItem(R.id.search)
 
+
+
+        //TODO: can/should I prevent SearchView from collapsing?
+        //TODO: I should only save valid searches (those with a matching organization ID)
+
+        //TODO: accessibility
+
+        // The X button fires onCloseListener (only if iconifiedbyDefault is true?) but the up button does not.
+
         val searchView = (searchMenuItem.actionView as SearchView)
         searchView.isActivated = true //TODO: is this necessary?
-        searchView.isIconifiedByDefault = false
+//        searchView.isIconifiedByDefault = false
         searchView.requestFocus()
 //        searchView.isSubmitButtonEnabled = true
         //TODO: do I need to call setActivated ?
-        //TODO: Rx debouncing?
         searchView.queryHint = getString(R.string.search_query_hint)
         //TODO: if I press enter, it searches twice. If I tap the search icon, it searches once
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -93,6 +107,30 @@ class GitHubRepoListFragment() : Fragment() {
                 return false
             }
         })
+
+        //TODO: when SearchView opens, automatically put focus in it
+
+        // Doesn't fire
+        searchView.setOnCloseListener {
+            Log.e(MainActivity.TAG, "searchView onCloseListener()")
+            false
+        }
+        // This fires when searchView closes. It doesn't fire when it opens, not unless user also puts focus in it.  I think it would fire if user clicked in a different txt field on screen
+        searchView.setOnQueryTextFocusChangeListener { v, hasFocus ->
+            Log.e(MainActivity.TAG, "searchView onQueryTextFocusChangeListener(v: $v, hasFocus: $hasFocus")
+        }
+        searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
+            override fun onSuggestionSelect(position: Int): Boolean {
+                Log.e(MainActivity.TAG, "searchView.onSuggestionListener onSuggestionSelect($position)")
+                return false
+            }
+
+            override fun onSuggestionClick(position: Int): Boolean {
+                Log.e(MainActivity.TAG, "searchView.onSuggestionListener onSuggestionClick($position)")
+                return false
+            }
+        })
+
 
 //        binding.navHostFragment
 
@@ -133,6 +171,7 @@ class GitHubRepoListFragment() : Fragment() {
     //TODO: can't do autocomplete exactly, but perhaps I should have a match pop up for the user to tap when there's an exact match?
 
     private fun loadRepositories(organizationLogin: String) {
+        Log.e("xxx", "loadRepositories($organizationLogin)")
         ApolloConnector.setupApollo().query(
             RepositoriesQuery.builder()
                 .organizationLogin(organizationLogin)
@@ -166,6 +205,7 @@ class GitHubRepoListFragment() : Fragment() {
                         }
                         // TODO: is there a better way?
                         activity?.runOnUiThread() {
+                            //TODO: rename viewAdapter?
                             viewAdapter.submitList(gitHubRepoList)
                             //TODO: likely a better way to do this
                             if (gitHubRepoList.size >= 1) {
@@ -177,6 +217,7 @@ class GitHubRepoListFragment() : Fragment() {
                                     findChromeCustomTabsNavigator().mayLaunchUrl(url)
                                 }
                             }
+
                         }
                     }
                     Log.d(

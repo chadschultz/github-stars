@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO: should I switch from CoordinatorLayout to ConstraintLayout? -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,14 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- TODO: note scroll behavior - maybe I should tweak UI to make it more obvious? -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/top_app_bar"
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:title="@string/app_name_full"
             app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:menu="@menu/top_app_bar"
-            app:title="page title test" />
+            app:menu="@menu/top_app_bar" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -30,4 +30,3 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
