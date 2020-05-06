@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">GHStars</string>
     <string name="app_name_full">GitHub Stars</string>
+
     <string name="search_query_hint">Organization ID on GitHub</string>
     <string name="search">Search</string>
+    <string name="no_repos_before_search">Search for an organization ID in the search bar, like \"google\" or \"nytimes\", to see the top three most starred repositories for that organization.</string>
+    <string name="no_repos_connection_error">Could not reach GitHub. Please check your Internet connection and try again.</string>
+    <string name="no_repos_wrong_organization">There is no organization matching the ID \"%1$s\" on GitHub. Please try searching for a different organization ID.</string>
+    <string name="no_repos_organization_has_none">%1$s has zero public repositories.</string>
 
 </resources>

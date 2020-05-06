@@ -4,6 +4,6 @@
     android:insetRight="@dimen/margin_normal">
         <shape>
             <size android:height="1dp" />
-            <solid android:color="@color/divider_item_decoration" />
+            <solid android:color="@color/secondary_text" />
         </shape>
 </inset>

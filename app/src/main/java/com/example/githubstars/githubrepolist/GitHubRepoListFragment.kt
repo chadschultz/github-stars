@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
@@ -48,7 +49,12 @@ class GitHubRepoListFragment() : BaseFragment() {
 
         //TODO: don't show chips for potential searches or otherwise assume what user will search - but do autocomplete recent searches, starting with zero characters. Use Gmail as an example
 
-        // TODO: multiple different view modes: initial load, recyclerview showing results, organization ID is not a match, organization has no repositories. Oh, and maybe if user exits searc hview?
+        // TODO: multiple different view modes: initial load, recyclerview showing results, organization ID is not a match, organization has no repositories. Oh, and maybe if user exits searc hview? Oh, and no Internet connection or some other error
+        // explore or star icons on first load?
+        // offline_bolt if no connection? or error or warning or signal_cellular? probably cloud_off
+        // warning for repository not found?
+        // search for no repositories
+        // animate changes in error messages?
 
         // TODO: progress indicator?
 
@@ -205,6 +211,9 @@ class GitHubRepoListFragment() : BaseFragment() {
                         }
                         // TODO: is there a better way?
                         activity?.runOnUiThread() {
+                            showOneOf(binding.recyclerView, binding.noReposLayout, gitHubRepoList.size > 0)
+
+
                             //TODO: rename viewAdapter?
                             viewAdapter.submitList(gitHubRepoList)
                             //TODO: likely a better way to do this
@@ -216,6 +225,11 @@ class GitHubRepoListFragment() : BaseFragment() {
                                     // repository is tricky to justify given that guidance.
                                     findChromeCustomTabsNavigator().mayLaunchUrl(url)
                                 }
+                            } else {
+                                //TODO: need to figure out how to tell if there was an error, zreo repos, or if the organization name was invalid
+                                //TODO: see if I can eliminate !!
+                                binding.noReposImageView.setImageDrawable(ContextCompat.getDrawable(activity!!, R.drawable.ic_search_black_24dp))
+                                binding.noReposTextView.text = getString(R.string.no_repos_organization_has_none, organizationLogin)
                             }
 
                         }

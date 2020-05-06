@@ -27,6 +27,7 @@
         <!-- TODO: shouldn't I only change the status bar color on higher APIs? -->
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+
 <!--        <item name="android:navigationBarColor">@color/colorPrimary</item>-->
 <!--        <item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
     </style>

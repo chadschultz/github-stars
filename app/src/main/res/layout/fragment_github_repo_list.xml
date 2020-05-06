@@ -6,12 +6,16 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity">
+    <!-- TODO: I don't need layout_Behavior on the root, do I? -->
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <!-- TODO: note scroll behavior - maybe I should tweak UI to make it more obvious? -->
+        <!-- When I used kotlinx synthetic references, I set camelCase IDs so they would appear more natural
+            as Kotlin object references. View Binding is nice enough to convert `top_app_bar` to `topAppBar`,
+            so I'm back to Android standard snake_case for XML IDs -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/top_app_bar"
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
@@ -24,9 +28,54 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <!-- TODO: if I don't use layout_Behavior, the no_repos_layout shows behind the appbar. If I do use it, it shows behind the nav bar. Does the recycler view show behind the nav bar? -->
+
+    <!-- TODO: test landscape and split screen, make sure it has room to show - and add a note about why I'm not wrapped in a ScrollView -->
+    <!-- Show this on first load. Then show the RecyclerView. Only show this Layout again (with
+        different images and text) in case of error. -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/no_repos_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <!-- TODO: adaptive size based on height -->
+        <!-- TODO: dimens reference instead of hardcoded? -->
+        <!-- Accessibility is important, but the image doesn't show anything that needs to be
+            replaced by text, so I'll ignore the ContentDescription warning. -->
+        <ImageView
+            android:id="@+id/no_repos_image_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_explore_black_24dp"
+            android:tint="@color/secondary_text"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/no_repos_text_view"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/no_repos_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_normal"
+            android:text="@string/no_repos_before_search"
+            android:textSize="24sp"
+            android:textColor="@color/secondary_text"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/no_repos_image_view"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
