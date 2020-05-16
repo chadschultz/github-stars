@@ -1,3 +1,10 @@
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import java.util.Base64
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -24,9 +31,83 @@ android {
     }
 
     buildTypes {
+        // If debug and release builds use different keys, two different String arrays can be made
+        // with the different key names.
+        //TODO
+        def sensitiveValueNames = ["GITHUB_API_KEY", "XYZZY", "PLOVER", "PLUGH"]
+        def sensitiveValueFiles = ["sensitive-values.properties"]
+
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+
+
+
+////            val plaintext: ByteArray = getKeyFromFile("GITHUB_API_KEY")
+////            val keygen = KeyGenerator.getInstance("AES")
+////            keygen.init(256)
+////            val key: SecretKey = keygen.generateKey()
+////            val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+////            cipher.init(Cipher.ENCRYPT_MODE, key)
+////            val ciphertext: ByteArray = cipher.doFinal(plaintext)
+////            val iv: ByteArray = cipher.iv
+//
+//            byte[] plaintext = getKeyFromFile("GITHUB_API_KEY").getBytes("UTF-8")
+////            byte[] plaintext = getKeyFromFile("GITHUB_API_KEY")
+//            KeyGenerator keygen = KeyGenerator.getInstance("AES")
+//            keygen.init(256)
+//            SecretKey key = keygen.generateKey()
+//            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+//            cipher.init(Cipher.ENCRYPT_MODE, key)
+//            byte[] ciphertext = cipher.doFinal(plaintext)
+//            byte[] iv = cipher.getIV()
+//            IvParameterSpec ivSpec = new IvParameterSpec(iv)
+//
+//            String encryptionKeyString = Base64.getEncoder().encodeToString(key.encoded)
+//            buildConfigField("String", "ENCRYPTION_KEY", "\"$encryptionKeyString\"")
+//
+//            project.logger.lifecycle("encryptionKeyString: $encryptionKeyString")
+//
+//            byte[] encryptionKeyByteArray = Base64.getDecoder().decode(encryptionKeyString)
+//            SecretKey processedKey = new SecretKeySpec(encryptionKeyByteArray, 0, encryptionKeyByteArray.length, "AES")
+//
+//            String cipherString = Base64.getEncoder().encodeToString(ciphertext)
+////            String cipherString = Base64.encodeToString(ciphertext)
+////            String cipherString = "\"" + new String(ciphertext) + "\""
+////            String cipherString = new String(ciphertext, "UTF-8")
+//
+//
+//            Cipher cipher2 = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+//            cipher2.init(Cipher.DECRYPT_MODE, processedKey, ivSpec)
+////            cipher2.init(Cipher.DECRYPT_MODE, key, ivSpec)
+////            android.util.Base64.decode(cipherString)
+//            byte[] decodedText = cipher2.doFinal(Base64.getDecoder().decode(cipherString))
+////            byte[] decodedText = cipher2.doFinal(Base64.decode(cipherString))
+////            byte[] decodedText = cipher2.doFinal(cipherString.getBytes())
+////            String decodedString = "\"" + new String(decodedText) + "\""
+////            String decodedString = new String(decodedText, "UTF-8")
+//            String decodedString = new String(decodedText)
+//            //TODO: save byte array in buildconfig?
+////
+////            buildConfigField("byte[]", "GITHUB_API_KEY", decodedText)
+//
+//            buildConfigField("String[]", "GITHUB_API_KEY",
+//                    "{" +
+//                            "\"" + cipherString + "\"," +
+//                            "\"" + Base64.getEncoder().encodeToString(iv) + "\"" +
+//                            "}")
+////            buildConfigField("String", "GITHUB_API_KEY", decodedString)
+////            buildConfigField("String", "GITHUB_API_KEY", "hello")
+//
+////            for (key in keys) {
+////                buildConfigField("String", key, getKeyFromFile(key))
+////            }
+        }
+
+        debug {
+            encryptSensitiveValues(it, sensitiveValueFiles, sensitiveValueNames)
         }
     }
 
@@ -78,5 +159,79 @@ dependencies {
     //TODO: what o I do with this?
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
+}
+
+//TODO: make more flexible
+//def getGitHubApiKey() {
+//    def keysFile = file("sensitive-values.properties")
+//    def keysProperties = new Properties()
+//    keysProperties.load(new FileInputStream(keysFile))
+//    return keysProperties['GITHUB_API_KEY']
+//}
+
+def buildConfigFieldForKey(buildType, String keyName) {
+//    return buildConfigField("String", keyName, getKeyFromFile(keyName))
+    buildType.buildConfigField("String", "TEST", getKeyFromFile('GITHUB_API_KEY'))
+}
+
+//TODO: try '"blah"' for adding quotes to strings
+def getKeyFromFile(String keyName) {
+    //TODO: handle if property is not found
+    def keysFile = file("sensitive-values.properties")
+    def keysProperties = new Properties()
+    keysProperties.load(new FileInputStream(keysFile))
+    return keysProperties[keyName]
+}
+//TODO: tidy up method
+//TODO: do I need to define the types of the parameters?
+//TODO: make syntax more Groovy like?
+def encryptSensitiveValues(buildType, fileNames, valueNames) {
+    KeyGenerator keyGenerator = KeyGenerator.getInstance("AES")
+    keyGenerator.init(256)
+    SecretKey key = keyGenerator.generateKey()
+    String encryptionKeyString = Base64.getEncoder().encodeToString(key.encoded)
+    buildType.buildConfigField("String", "ENCRYPTION_KEY", "\"$encryptionKeyString\"")
+
+    def propertiesList = loadPropertiesList(fileNames)
+    for (valueName in valueNames) {
+        def sensitiveValue = System.getenv(valueName)
+        if (sensitiveValue == null || sensitiveValue.length() == 0) {
+            for (properties in propertiesList) {
+                sensitiveValue = properties[valueName]
+                if (sensitiveValue != null && sensitiveValue.length() > 0) {
+                    break
+                }
+            }
+        }
+        if (sensitiveValue == null || sensitiveValue.length() == 0) {
+            throw new GradleException("A sensitive value with the ID $valueName could not be found in environment variables or properties files.")
+        }
+
+
+        //TODO: try to reuse some of this
+        byte[] sensitiveBytes = sensitiveValue.getBytes("UTF-8")
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+        cipher.init(Cipher.ENCRYPT_MODE, key)
+        byte[] encryptedBytes = cipher.doFinal(sensitiveBytes)
+
+        buildType.buildConfigField("String[]", valueName,
+                "{" +
+                    "\"" + Base64.getEncoder().encodeToString(encryptedBytes) + "\"," +
+                    "\"" + Base64.getEncoder().encodeToString(cipher.getIV()) + "\"" +
+                "}")
+    }
 
 }
+
+def loadPropertiesList(fileNames) {
+    List<Properties> propertiesList = new ArrayList()
+    for (fileName in fileNames) {
+        def properties = new Properties()
+        properties.load(new FileInputStream(file(fileName)))
+        propertiesList.add(properties)
+    }
+    return propertiesList
+}
+
+// multiple environments https://medium.com/@bharathkumarbachina/read-property-file-using-buildconfig-gradle-356c9cf49f0c

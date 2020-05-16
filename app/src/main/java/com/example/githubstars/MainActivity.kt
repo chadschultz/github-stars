@@ -2,6 +2,8 @@ package com.example.githubstars
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -9,6 +11,10 @@ import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.githubstars.databinding.ActivityMainBinding
+import com.example.githubstars.util.SensitiveValues
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 class MainActivity : AppCompatActivity() {
 
@@ -67,6 +73,37 @@ class MainActivity : AppCompatActivity() {
                     SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or
                     SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
+
+
+
+//        val encryptionKey = BuildConfig.ENCRYPTION_KEY
+//        val encryptionKeyByteArray = Base64.decode(encryptionKey, Base64.DEFAULT)
+//        val key = SecretKeySpec(encryptionKeyByteArray, 0, encryptionKeyByteArray.size, "AES")
+//
+//        val encryptedApiKey = BuildConfig.GITHUB_API_KEY[0]
+//        val encryptedApiKeyBytes = Base64.decode(encryptedApiKey, Base64.DEFAULT)
+//        val ivString = BuildConfig.GITHUB_API_KEY[1]
+//        val ivBytes = Base64.decode(ivString, Base64.DEFAULT)
+//        val ivSpec = IvParameterSpec(ivBytes)
+//
+//        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+//        cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)
+//
+//        val decodedBytes = cipher.doFinal(encryptedApiKeyBytes)
+//        val decodedString = String(decodedBytes)
+
+//        val decodedString = SensitiveValues.decrypt(BuildConfig.GITHUB_API_KEY)
+
+
+        Log.e("xxx", "decoded API key: ${SensitiveValues.decrypt(BuildConfig.GITHUB_API_KEY)}")
+        Log.e("xxx", "decoded XYZZY key : ${SensitiveValues.decrypt(BuildConfig.XYZZY)}")
+        Log.e("xxx", "decoded API key 2: ${SensitiveValues.decrypt(BuildConfig.GITHUB_API_KEY)}")
+        Log.e("xxx", "decoded PLUGH key : ${SensitiveValues.decrypt(BuildConfig.PLUGH)}")
+        Log.e("xxx", "decoded API key 3: ${SensitiveValues.decrypt(BuildConfig.GITHUB_API_KEY)}")
+        Log.e("xxx", "decoded PLOVER key : ${SensitiveValues.decrypt(BuildConfig.PLOVER)}")
+
+        //TODO: temp
+//        Log.e("xxx", "api key: ${BuildConfig.GITHUB_API_KEY[0]}")
     }
 
 }
