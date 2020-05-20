@@ -1,6 +1,9 @@
 package com.example.githubstars.data
 
+import android.util.Log
 import com.apollographql.apollo.ApolloClient
+import com.example.githubstars.BuildConfig
+import com.example.githubstars.util.SensitiveValues
 import okhttp3.*
 
 
@@ -14,9 +17,17 @@ class ApolloConnector {
         fun setupApollo(): ApolloClient {
             val okHttpClient = OkHttpClient.Builder().authenticator(object: Authenticator {
                 override fun authenticate(route: Route?, response: Response): Request? {
+                    val accessToken = SensitiveValues.decrypt(BuildConfig.GITHUB_ACCESS_TOKEN)
                     //TODO: more secure way to handle authentication
                     //TODO: improve? https://stackoverflow.com/questions/22490057/android-okhttp-with-basic-authentication
-                    return response.request().newBuilder().header("Authorization", "bearer 6416cb9cd8dd27fcdc87c5646e91c39c6f3c7783").build()
+                    Log.e("xxx", "accessToken: $accessToken")
+                    val bearer = "bearer $accessToken"
+                    val testString = "whatever"
+                    Log.e("xxx", "bearer: $bearer")
+
+//                    return response.request().newBuilder().header("Authorization", "bearer $accessToken").build()
+//                    return response.request().newBuilder().header("Authorization", "bearer 00ca2c4b049988648e92850ab77cc4bd0f84d115").build()
+                    return response.request().newBuilder().header("Authorization", bearer).build()
                 }
 
             }).build()

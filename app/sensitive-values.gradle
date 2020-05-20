@@ -1,0 +1,128 @@
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+
+/*
+To use this Gradle file:
+1. Turn on obfuscation for your signed builds. https://developer.android.com/studio/build/shrink-code#enable
+    This code will work just fine without that step, but obfuscating your code is just as important
+    as encryption when it comes to protecting your sensitive values.
+2. Consider which values are sensitive and need to be protected. API keys are the most common example.
+    Put these in one or more .properties files in the root of your app module (you may want multiple
+    files if you use different values for different build types).
+    You might also set these values as system environment variables. For example you might use
+    .properties files on developer machines, but system environment variables on your CI server.
+3. Add those .properties files to your .gitignore. If your repository is open source, this step is vital!
+    Checking your sensitive values into a publicly available repository defeats the purpose of
+    obfuscating and encrypting them. If your repository is private, you might choose to commit the
+    .properties files and focus on keeping access to the repo secure, or you might choose to add those
+    files to your .gitignore for an extra layer of security. Bear in mind that the files would need
+    to be added to each developer machine manually if they are not in the repository.
+4. Put it in the module where you want to use it (the same level as your existing build.gradle file).
+5. Add this line to your build.gradle file, perhaps near the `apply plugin` lines:
+    apply from: "sensitive-values.gradle"
+6. Call `encryptSensitiveValues()` from your `buildTypes` sections, such as `release` and `debug`.
+    Always pass `it` for `buildType`
+    `fileNames` is an array list of Strings. Each is a filename of a .properties file with key-value pairs
+        representing the sensitive values, such as API keys, that you want to store. Place these files
+        in the module root (the same folder this file is in).
+    `valueNames` is an array list of Strings. Each is the key for sensitive values in the .properties files
+        (or environment values). This will also be the identifier for when the value is stored in BuildConfig.
+        Values in the properties files (or system environment values) not named in `valueNames` will not be
+        processed. Environment variables will override the properties files.
+
+    Example usage:
+    ```
+    apply from: "sensitive-values.gradle"
+
+    def sensitiveValueNames = ["AWESOME_API_KEY", "THIRD_PARTY_SECRET", "HIGH_SCHOOL_LOCKER_COMBINATION"]
+
+    android {
+        buildTypes {
+            release {
+                encryptSensitiveValues(
+                    it,
+                    ["sensitive-values-base.properties", "sensitive-values-release.properties"],
+                    sensitiveValueNames
+                )
+            }
+            debug {
+                encryptSensitiveValues(
+                    it,
+                    ["sensitive-values-base.properties", "sensitive-values-debug.properties"],
+                    sensitiveValueNames
+                )
+            }
+        }
+    }
+    ```
+
+    You can define array lists and pass them to the `encryptSensitiveValues()` closure, or directly pass
+    the array lists as literals.
+    You can use multiple file names, one (it would still be an array list), or zero (an empty array list).
+    You can use the same file names for every build type, or different file names.
+    you can use the same value names for every built type, or different value names.
+    This makes it easy to use different sensitive values for different build types. For example, develop
+    API keys in debug builds, and production API keys in release builds.
+
+    See SensitiveValues.kt for information on using these values from your app code.
+ */
+ext.encryptSensitiveValues = {
+    buildType, fileNames, valueNames ->
+    // Get the SecretKey object and write it to BuildConfig
+    def key = buildEncryptionKey(buildType)
+    def cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+    cipher.init(Cipher.ENCRYPT_MODE, key)
+
+    def propertiesList = loadPropertiesList(fileNames)
+    for (valueName in valueNames) {
+        // First try to find the sensitive value in system environment variables
+        // Note: if you test on Mac OS X, environment variables will not be available by default.
+        // Try running Android Studio from the command line, like
+        // /Applications/Android\ Studio.app/Contents/MacOS/studio
+        def sensitiveValue = System.getenv(valueName)
+        if (sensitiveValue == null || sensitiveValue.length() == 0) {
+            // If the sensitive value wasn't in environment variables, check each properties file
+            // until we find it.
+            for (properties in propertiesList) {
+                sensitiveValue = properties[valueName]
+                if (sensitiveValue != null && sensitiveValue.length() > 0) {
+                    break
+                }
+            }
+        }
+        if (sensitiveValue == null || sensitiveValue.length() == 0) {
+            throw new GradleException("A sensitive value with the ID $valueName could not be found in environment variables or properties files.")
+        }
+        // Encrypt the sensitive value
+        byte[] encryptedBytes = cipher.doFinal(sensitiveValue.getBytes("UTF-8"))
+        // Add the encrypted value and the IV (initialization vector) to BuildConfig. We will
+        // need both, plus the original encryption key, to be able to decrypt the sensitive value.
+        buildType.buildConfigField("String[]", valueName,
+                "{" +
+                        "\"" + Base64.getEncoder().encodeToString(encryptedBytes) + "\"," +
+                        "\"" + Base64.getEncoder().encodeToString(cipher.getIV()) + "\"" +
+                        "}")
+    }
+
+}
+
+// This function can't be static, because it uses the special `file()` method
+def loadPropertiesList(fileNames) {
+    def propertiesList = new ArrayList()
+    for (fileName in fileNames) {
+        def properties = new Properties()
+        properties.load(new FileInputStream(file(fileName)))
+        propertiesList.add(properties)
+    }
+    return propertiesList
+}
+
+// This function can be static - we're just calling Java methods, nothing that relies on `self`
+static def buildEncryptionKey(buildType) {
+    def keyGenerator = KeyGenerator.getInstance("AES")
+    keyGenerator.init(256)
+    def key = keyGenerator.generateKey()
+    def encryptionKeyString = Base64.getEncoder().encodeToString(key.encoded)
+    buildType.buildConfigField("String", "ENCRYPTION_KEY", "\"$encryptionKeyString\"")
+    return key
+}
