@@ -8,7 +8,8 @@ To use this Gradle file:
     as encryption when it comes to protecting your sensitive values.
 2. Consider which values are sensitive and need to be protected. API keys are the most common example.
     Put these in one or more .properties files in the root of your app module (you may want multiple
-    files if you use different values for different build types).
+    files if you use different values for different build types). (A line in your .properties file
+    would look like `GITHUB_ACCESS_TOKEN=abc123`)
     You might also set these values as system environment variables. For example you might use
     .properties files on developer machines, but system environment variables on your CI server.
 3. Add those .properties files to your .gitignore. If your repository is open source, this step is vital!
