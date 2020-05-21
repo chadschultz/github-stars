@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity() {
 
     //TODO: empty view for RecyclerView
 
+    //TODO: work on readme. And maybe remove all mentions of New York Times from app code, just in case?
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
