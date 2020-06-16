@@ -12,7 +12,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.exception.ApolloCanceledException
 import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.exception.ApolloHttpException
+import com.apollographql.apollo.exception.ApolloNetworkException
+import com.apollographql.apollo.exception.ApolloParseException
 import com.example.chromecustomtabsnavigator.findChromeCustomTabsNavigator
 import com.example.githubstars.BaseFragment
 import com.example.githubstars.MainActivity
@@ -211,6 +215,7 @@ class GitHubRepoListFragment() : BaseFragment() {
                         }
                         // TODO: is there a better way?
                         activity?.runOnUiThread() {
+                            //TODO: does `showOneOf` provide value or should it be removed?
                             showOneOf(binding.recyclerView, binding.noReposLayout, gitHubRepoList.size > 0)
 
 
@@ -227,7 +232,7 @@ class GitHubRepoListFragment() : BaseFragment() {
                                 }
                             } else {
                                 //TODO: need to figure out how to tell if there was an error, zreo repos, or if the organization name was invalid
-                                //TODO: see if I can eliminate !!
+                                //TODO: see if I can eliminate `!!`
                                 binding.noReposImageView.setImageDrawable(ContextCompat.getDrawable(activity!!, R.drawable.ic_search_black_24dp))
                                 binding.noReposTextView.text = getString(R.string.no_repos_organization_has_none, organizationLogin)
                             }
@@ -241,9 +246,43 @@ class GitHubRepoListFragment() : BaseFragment() {
                 }
 
                 override fun onFailure(e: ApolloException) {
+                    //TODO: does `showOneOf` provide value or should it be removed?
+                    showOneOf(binding.recyclerView, binding.noReposLayout, false)
+                    binding.noReposImageView.setImageDrawable(ContextCompat.getDrawable(activity!!, R.drawable.ic_cloud_off_black_24dp))
+                    binding.noReposTextView.text = getString(R.string.no_repos_connection_error)
+
                     Log.d(MainActivity.TAG, "Exception " + e.message, e)
                 }
 
+                // TODO: do I need this method?
+                override fun onCanceledError(e: ApolloCanceledException) {
+                    super.onCanceledError(e)
+                    Log.d(MainActivity.TAG, "OnCanceledError " + e.message, e)
+                }
+
+                // TODO: do I need this method?
+                override fun onNetworkError(e: ApolloNetworkException) {
+                    super.onNetworkError(e)
+                    Log.d(MainActivity.TAG, "OnNetworkError " + e.message, e)
+                }
+
+                // TODO: do I need this method?
+                override fun onParseError(e: ApolloParseException) {
+                    super.onParseError(e)
+                    Log.d(MainActivity.TAG, "OnParseError " + e.message, e)
+                }
+
+                // TODO: do I need this method?
+                override fun onHttpError(e: ApolloHttpException) {
+                    super.onHttpError(e)
+                    Log.d(MainActivity.TAG, "OnHttpError " + e.message, e)
+                }
+
+                // TODO: do I need this method?
+                override fun onStatusEvent(event: ApolloCall.StatusEvent) {
+                    super.onStatusEvent(event)
+                    Log.d(MainActivity.TAG, "OnStatusEvent: $event")
+                }
             })
     }
 

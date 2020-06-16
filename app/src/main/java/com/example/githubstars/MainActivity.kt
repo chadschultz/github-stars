@@ -2,8 +2,6 @@ package com.example.githubstars
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -11,10 +9,6 @@ import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.githubstars.databinding.ActivityMainBinding
-import com.example.githubstars.util.SensitiveValues
-import javax.crypto.Cipher
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     //TODO: empty view for RecyclerView
 
     //TODO: work on readme. And maybe remove all mentions of New York Times from app code, just in case?
+
+    //TODO: write a medium article about encryption, linking to repo. Get feedback on if I'm making any glaring security gaffes, perhaps via StackOverflow or Reddit.
 
     private lateinit var binding: ActivityMainBinding
 
