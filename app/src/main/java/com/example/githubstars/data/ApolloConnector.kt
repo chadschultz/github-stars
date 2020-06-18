@@ -18,11 +18,13 @@ class ApolloConnector {
         fun setupApollo(): ApolloClient {
             val okHttpClient = OkHttpClient.Builder().authenticator(object : Authenticator {
                 override fun authenticate(route: Route?, response: Response): Request? {
+                    Log.d("xxx", "ApolloConnector authenticate()")
                     if (response.request.header("Authorization") != null) {
                         Log.w("xxx", "We've already attempted to authenticate. Giving up on authentication.")
                         return null
                     }
                     //TODO: Timber
+                    // TODO: need to handle 401 unauthorized response
                     Log.d("xxx", "Authenticating for response: $response")
                     Log.d("xxx", "Challenges: ${response.challenges()}")
                     val accessToken = SensitiveValues.decrypt(BuildConfig.GITHUB_ACCESS_TOKEN)

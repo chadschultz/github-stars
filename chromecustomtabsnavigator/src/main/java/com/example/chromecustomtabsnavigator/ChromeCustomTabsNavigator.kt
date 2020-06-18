@@ -12,7 +12,11 @@ import android.util.Log
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.browser.customtabs.*
+import androidx.browser.customtabs.CustomTabsCallback
+import androidx.browser.customtabs.CustomTabsClient
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsServiceConnection
+import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.drawable.toBitmap
@@ -161,8 +165,6 @@ class ChromeCustomTabsNavigator(
     }
 
     private fun shouldAllowLaunch(uri: Uri): Boolean {
-        //TODO: temp
-        Log.e("xxx", "shouldAllow Launch $uri")
         urisInProgress[uri]?.let { tabStartTime ->
             // Have we launched this URI before recently?
             if (System.currentTimeMillis() - tabStartTime > throttleTimeout) {

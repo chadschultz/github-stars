@@ -239,6 +239,7 @@ class GitHubRepoListFragment() : BaseFragment() {
 
                         }
                     }
+                    // TODO: response is "Data{organization=null}" if authentication failed. Are there other situations where it is null?
                     Log.d(
                         MainActivity.TAG,
                         "Response: " + response.data()?.organization()?.repositories()?.edges()?.size
@@ -247,11 +248,15 @@ class GitHubRepoListFragment() : BaseFragment() {
 
                 override fun onFailure(e: ApolloException) {
                     //TODO: does `showOneOf` provide value or should it be removed?
-                    showOneOf(binding.recyclerView, binding.noReposLayout, false)
-                    binding.noReposImageView.setImageDrawable(ContextCompat.getDrawable(activity!!, R.drawable.ic_cloud_off_black_24dp))
-                    binding.noReposTextView.text = getString(R.string.no_repos_connection_error)
-
-                    Log.d(MainActivity.TAG, "Exception " + e.message, e)
+                    activity?.runOnUiThread() {
+                        Log.d(MainActivity.TAG, "showing no repos layout due to exception")
+                        showOneOf(binding.recyclerView, binding.noReposLayout, false)
+                        binding.noReposImageView.setImageDrawable(ContextCompat.getDrawable(activity!!, R.drawable.ic_cloud_off_black_24dp))
+                        binding.noReposTextView.text = getString(R.string.no_repos_connection_error)
+                    }
+                    //Connection problem triggers this AND onNetworkError with "Failed to execute http call"
+                    //So which one should show the network error?
+                    Log.d(MainActivity.TAG, "onFailure() Exception " + e.message, e)
                 }
 
                 // TODO: do I need this method?
